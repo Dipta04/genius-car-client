@@ -4,25 +4,41 @@ import Orderrow from './Orderrow';
 
 const Orders = () => {
 
-    const { user } = useContext(AuthContext);
+    const { user, logOut } = useContext(AuthContext);
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:5000/orders?email=${user?.email}`)
-            .then(res => res.json())
-            .then(data => setOrders(data))
-    }, [user?.email])
+        fetch(`http://localhost:5000/orders?email=${user?.email}`, {
+            headers: {
+                 authorization: `Bearer ${localStorage.getItem('genius-token')}`
+              }
+        })
+            .then(res => {
+              if(res.status === 401 || res.status === 403)
+              {
+                return logOut()
+              }
+              return res.json();
+            })
+            .then(data => {
+                // console.log('received', data)
+                setOrders(data);
+            })
+    }, [user?.email, logOut])
 
     const handleDelete = id => {
 
         const proceed = window.confirm('Are you sure, you want to cancel this order');
         if (proceed) {
             fetch(`http://localhost:5000/orders/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem('genius-token')}`
+                 }
             })
                 .then(res => res.json())
                 .then(data => {
-                    console.log(data);
+                    // console.log(data);
                     if (data.deletedCount > 0) {
                         alert('deleted successfully');
                         const remaining = orders.filter(odr => odr._id !== id);
@@ -38,7 +54,8 @@ const Orders = () => {
         fetch(`http://localhost:5000/orders/${id}`, {
             method: 'PATCH',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                authorization: `Bearer ${localStorage.getItem('genius-token')}`
             },
             body: JSON.stringify({status: 'Approved'}) 
         })
