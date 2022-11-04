@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import img from '../../assets/images/login/login.svg'
 import { AuthContext } from '../../Contexts/AuthProvider/AuthProvider';
+import SocialLogin from '../Shared/SocialLogin/SocialLogin';
 
 const Login = () => {
 
@@ -28,7 +29,7 @@ const Login = () => {
             console.log(currentUser);
 
             // get jwt token
-            fetch('http://localhost:5000/jwt', {
+            fetch('https://genius-car-server-kappa.vercel.app/jwt', {
                  method: 'POST',
                  headers: {
                     'Content-Type': 'application/json'
@@ -87,6 +88,7 @@ const Login = () => {
                     </form>
 
                     <p className='text-center'>New to Genius Car <Link className='text-orange-600 font-bold' to='/signup'>Sign Up</Link></p>
+                    <SocialLogin></SocialLogin>
 
                 </div>
             </div>
